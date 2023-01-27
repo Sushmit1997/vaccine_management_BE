@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const vaccineSchema = new mongoose.Schema({
-    name:{
-        type:String,
+    name: {
+        type: String,
         required: true
     },
     company_email: {
@@ -15,16 +15,16 @@ const vaccineSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true
+        required: false
     },
     number_of_dose: {
         type: Number,
         required: true
     },
     gender: {
-        type: Number,
-        required: true
-    }
+        type: String,
+        required: false
+    },
 
 })
 
