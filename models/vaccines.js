@@ -15,7 +15,7 @@ const vaccineSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: false
+        required:false,
     },
     number_of_dose: {
         type: Number,
@@ -25,6 +25,13 @@ const vaccineSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    createdBy: {
+        type: String,
+        required: false,
+    },
+    isMandatory: {
+        type: Boolean
+    }
 
 })
 

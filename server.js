@@ -20,6 +20,7 @@ app.use(cors({
 app.use('/vaccines', vaccines);
 app.use("/users", users);
 app.use("/signin", auth);
+app.use('/uploads', express.static('uploads'));
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/vaccines');

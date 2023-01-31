@@ -6,12 +6,44 @@ const Vaccine = require('../models/vaccines')
 const auth = require("../middleware/auth");
 
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  }
+})
+
+const fileFilter = (req, file, cb) => {
+  //reject a file
+
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true)
+  }
+  else {
+    cb(null, false)
+  }
+
+
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+})
 
 //Getting all vaccines
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
-    const vaccines = await Vaccine.find()
-    res.status(200).json(vaccines)
+    const vaccines = await Vaccine.find({ createdBy: req.user._id })
+    let mandatoryVaccines = vaccines.filter((vaccine) => vaccine.isMandatory).sort(compare)
+    let nonMandatoryVaccines = vaccines.filter((vaccine) => !vaccine.isMandatory).sort(compare)
+    let finalVaccines = [...mandatoryVaccines, ...nonMandatoryVaccines]
+    res.status(200).json(finalVaccines)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
@@ -20,13 +52,16 @@ router.get('/', async (req, res) => {
 
 
 //Adding a vaccine
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, upload.single('image'), async (req, res) => {
   console.log(req.body)
     const vaccine = new Vaccine({
       name: req.body.name,
       company_email: req.body.company_email,
       company_contact: req.body.company_contact,
       number_of_dose: req.body.number_of_dose,
+      image: req.file ? req.file.path : '',
+      gender: req.body.gender,
+      createdBy: req.user._id
     })
     try {
       const newVaccine = await vaccine.save()
@@ -40,7 +75,7 @@ router.post('/', auth, async (req, res) => {
 
 //Updating a vaccine
 
-router.patch('/:id', getVaccine, async (req, res) => {
+router.patch('/:id', auth, upload.single('image'), getVaccine, async (req, res) => {
 
   if(req.body.name !== null){
     res.vaccine.name = req.body.name
@@ -56,6 +91,10 @@ router.patch('/:id', getVaccine, async (req, res) => {
 
   if(req.body.number_of_dose !== null){
     res.vaccine.number_of_dose = req.body.number_of_dose
+  }
+
+  if (req.body.image !== null) {
+    res.vaccine.image = req.file ? req.file.path : req.body.image
   }
 
   try {
@@ -76,6 +115,18 @@ router.delete('/:id', getVaccine, async (req, res) => {
   }
 })
 
+//Mandate a vaccine
+
+router.get('/mandate/:id', getVaccine, (req, res) => {
+  try {
+    res.vaccine.isMandatory = !res.vaccine.isMandatory
+    res.vaccine.save()
+    res.status(200).json({ message: res.vaccine.isMandatory ? 'Vaccine removed from mandatory' : 'Vaccine removed from mandatory' })
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to add favourite.' })
+  }
+})
+
 
 async function getVaccine(req, res, next) {
   let vaccine
@@ -89,6 +140,16 @@ async function getVaccine(req, res, next) {
   }
   res.vaccine = vaccine
   next()
+}
+
+function compare(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  }
+  if (a.name > b.name) {
+    return 1;
+  }
+  return 0;
 }
 
 
