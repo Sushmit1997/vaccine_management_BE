@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "cross-env jest test",
+    "test:coverage": "cross-env NODE_ENV=test nyc --require @babel/register --reporter lcov --reporter text mocha --exit --recursive test"
   },
   "repository": {
     "type": "git",
@@ -17,19 +19,26 @@
   },
   "homepage": "https://github.com/Sushmit1997/vaccine_management_BE#readme",
   "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^6.8.4",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "express": "^4.18.2",
     "express-validator": "^6.14.0",
     "joi": "^17.5.0",
     "jsonwebtoken": "^8.5.1",
+    "mocha": "^10.2.0",
+    "mongoose": "^6.8.4",
     "multer": "^1.4.4",
     "path": "^0.12.7"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "@babel/register": "^7.18.9",
+    "chai": "^4.3.7",
+    "cross-env": "^7.0.3",
+    "jest": "^29.4.1",
+    "nodemon": "^2.0.20",
+    "nyc": "^15.1.0",
+    "supertest": "^6.3.3"
   }
 }
