@@ -14,7 +14,7 @@ const auth = require("./routes/auth");
 
 app.use(express.json());
 app.use(cors({
-  origin: 'https://main--peppy-pony-00d3ac.netlify.app'
+  origin: process.env.ORIGIN
 }))
 
 app.use('/vaccines', vaccines);
