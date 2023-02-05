@@ -3,7 +3,7 @@ const app = require('./app')
 const mongoose = require('mongoose')
 const port = process.env.PORT || 5000;
 
-const dataBaseUrl = 'mongodb+srv://sushmit:d0Kursd8XPXaSlR2@cluster0.k446z.mongodb.net/?retryWrites=true&w=majority'
+const dataBaseUrl = process.env.DATABASE_URL
 
 mongoose.connect(dataBaseUrl);
 
