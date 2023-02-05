@@ -3,7 +3,9 @@ const app = require('./app')
 const mongoose = require('mongoose')
 const port = process.env.PORT || 5000;
 
-mongoose.connect('mongodb://127.0.0.1:27017/vaccines');
+const dataBaseUrl = 'mongodb+srv://sushmit:d0Kursd8XPXaSlR2@cluster0.k446z.mongodb.net/?retryWrites=true&w=majority'
+
+mongoose.connect(dataBaseUrl);
 
 const db = mongoose.connection
 
